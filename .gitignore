@@ -1,0 +1,5 @@
+env/
+main_dataset/
+covid_dataset/
+.vscode/
+__pycache__/
