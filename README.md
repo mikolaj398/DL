@@ -5,5 +5,9 @@ Unzip in main project directory or change variables in `consts.py` file accordin
 ## Before running:
 `pip install -r requirements.txt`
 
+## Running:
+To run without plotting: `python main.py` <br>
+To run with plotting: `python main.py True` <br>
+
 
 
