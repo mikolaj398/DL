@@ -28,12 +28,28 @@ train_df, test_df = train_test_split(data, test_size=0.25, random_state=2018)
 train_df["Finding Labels"] = train_df.apply(lambda x: x["Finding Labels"].split("|"), axis=1)
 test_df["Finding Labels"] = test_df.apply(lambda x: x["Finding Labels"].split("|"), axis=1)
 
-img_data_gen = get_image_data_generator()
+
+# ================================ experiment 1 ================================
+results = []
+
+print("================================ NO AUGMENTATION ================================")
+img_data_gen = get_image_data_generator(augmentation=False)
 train_gen = get_image_iterator(train_df, img_data_gen)
 test_gen = get_image_iterator(test_df, img_data_gen)
+results.append(train('no_augmentation', train_gen, test_gen, all_labels, plot))
 
 if plot:
     show_image_examples(train_gen)
 
-train(train_gen, test_gen, all_labels, plot)
+print("================================ AUGMENTATION ================================")
+img_data_gen = get_image_data_generator(augmentation=True)
+train_gen = get_image_iterator(train_df, img_data_gen)
+test_gen = get_image_iterator(test_df, img_data_gen)
+results.append(train('augmentation', train_gen, test_gen, all_labels, plot))
+
+if plot:
+    plot_augmentation(results)
+
+
+
 

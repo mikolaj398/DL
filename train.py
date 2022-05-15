@@ -11,58 +11,66 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
 
+
 def get_image_iterator(data, image_data_generator):
     return image_data_generator.flow_from_dataframe(
-    dataframe=data,
-    x_col="path",
-    y_col="Finding Labels",
-    class_mode="categorical",
-    target_size=IMG_SIZE,
-    color_mode="grayscale",
-    batch_size=BATCH_SIZE,
-)
-def get_image_data_generator():
-    return ImageDataGenerator(
-        samplewise_center=True,
-        samplewise_std_normalization=True,
-        horizontal_flip=True,
-        vertical_flip=False,
-        height_shift_range=0.05,
-        width_shift_range=0.1,
-        rotation_range=5,
-        shear_range=0.1,
-        fill_mode="reflect",
-        zoom_range=0.15,
+        dataframe=data,
+        x_col="path",
+        y_col="Finding Labels",
+        class_mode="categorical",
+        target_size=IMG_SIZE,
+        color_mode="grayscale",
+        batch_size=BATCH_SIZE,
     )
 
-def get_model():
+
+def get_image_data_generator(augmentation=True):
+    img_generator = ImageDataGenerator()
+
+    if augmentation:
+        img_generator = ImageDataGenerator(
+            samplewise_center=True,
+            samplewise_std_normalization=True,
+            horizontal_flip=True,
+            vertical_flip=False,
+            height_shift_range=0.05,
+            width_shift_range=0.1,
+            rotation_range=5,
+            shear_range=0.1,
+            fill_mode="reflect",
+            zoom_range=0.15,
+        )
+    return img_generator
+
+
+def get_model(activation_func="relu"):
     model = Sequential()
+
     model.add(Conv2D(32, (3, 3), input_shape=(*IMG_SIZE, 1)))
-    model.add(Activation('relu'))
+    model.add(Activation(activation_func))
     model.add(MaxPooling2D(pool_size=(2, 2)))
 
     model.add(Conv2D(32, (3, 3)))
-    model.add(Activation('relu'))
+    model.add(Activation(activation_func))
     model.add(MaxPooling2D(pool_size=(2, 2)))
 
     model.add(Conv2D(64, (3, 3)))
-    model.add(Activation('relu'))
+    model.add(Activation(activation_func))
     model.add(MaxPooling2D(pool_size=(2, 2)))
 
     model.add(Flatten())
     model.add(Dense(64))
-    model.add(Activation('relu'))
+    model.add(Activation(activation_func))
     model.add(Dropout(0.5))
     model.add(Dense(1))
-    model.add(Activation('sigmoid'))
+    model.add(Activation("relu"))
 
-    model.compile(loss='binary_crossentropy',
-                optimizer='rmsprop',
-                metrics=['accuracy'])
-    
+    model.compile(loss="binary_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
+
     return model
 
-def train(train_gen, test_gen, all_labels, plot):
+
+def train(title, train_gen, test_gen, all_labels, plot):
     test_X, test_Y = next(test_gen)
 
     model = get_model()
@@ -74,15 +82,12 @@ def train(train_gen, test_gen, all_labels, plot):
         epochs=EPOCHS,
     )
     model_history = pd.DataFrame(history.history)
-    model_history['epoch'] = history.epoch
+    model_history["epoch"] = history.epoch
 
-    print(history)
-    print('------------------------------------------------')
-    print(model_history)
+    with open(RESULTS_PATH + f'{title}_results.json', mode='w+') as f:
+        model_history.to_json(f)
+    
+    if plot:
+        plot_metrics(title, model_history)
 
-    plot_metrics(model_history)
-
-    # pred_Y = model.predict(test_X, batch_size=32, verbose=True)
-
-    # if plot:
-    #     plot_roc(all_labels, pred_Y, test_Y)
+    return model_history

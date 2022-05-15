@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import roc_curve, auc
+from consts import EPOCHS, PLOTS_PATH
 
-PLOTS_PATH = './plots/'
 def show_image_examples(df_iterator):
     all_labels = list(df_iterator.class_indices.keys())
     iter_image, iter_labels = next(df_iterator)
@@ -42,19 +42,42 @@ def plot_roc(all_labels, pred_Y, test_Y):
     fig.savefig('roc.png')
     plt.show()
 
-def plot_metrics(model_history):
+def plot_metrics(title, model_history):
 
-    num_epochs = model_history.shape[0]
-    fig, (ax1, ax2) = plt.subplots(1, 2)
+    fig, axs = plt.subplots(2)
+    suptitle = fig.suptitle(title.replace('_', ' ').title(), fontsize=16)
 
-    ax1.plot(np.arange(0, num_epochs), model_history["accuracy"], label="Training Accuracy")
-    ax1.plot(np.arange(0, num_epochs), model_history["loss"], label="Training Loss")
-    ax1.set_title("Training")
+    axs[0].plot(np.arange(0, EPOCHS), model_history["accuracy"], label="Training Accuracy")
+    axs[0].plot(np.arange(0, EPOCHS), model_history["val_accuracy"], label="Validation  Accuracy")
+    axs[0].set_title("Accuracy")
     
-    ax2.plot(np.arange(0, num_epochs), model_history["val_accuracy"], label="Validation  Accuracy")
-    ax2.plot(np.arange(0, num_epochs), model_history["val_loss"], label="Validation  Loss")
-    ax2.set_title("Validation ")
-    ax2.legend()
-    
-    fig.savefig(PLOTS_PATH + 'metrics.png')
+    axs[1].plot(np.arange(0, EPOCHS), model_history["loss"], label="Training Loss")
+    axs[1].plot(np.arange(0, EPOCHS), model_history["val_loss"], label="Validation  Loss")
+    axs[1].set_title("Loss ")
+
+    legend = fig.legend(loc='center right', labels = ["Training", "Validation"], bbox_to_anchor = (1.2, 0.5))
+    fig.tight_layout()
+    fig.savefig(PLOTS_PATH + f'{title}_plots.png', bbox_extra_artists=(legend, suptitle), bbox_inches='tight')
     plt.show()
+    
+
+def plot_augmentation(results):
+    no_augmentation = results[0]
+    augmentation = results[1]
+
+    fig, axs = plt.subplots(2)
+    suptitle = fig.suptitle('Usage of Augmentation results', fontsize=16)
+
+    axs[0].plot(np.arange(0, EPOCHS), no_augmentation["accuracy"], label="No Augmentation Accuracy")
+    axs[0].plot(np.arange(0, EPOCHS), augmentation["accuracy"], label="Augmentation  Accuracy")
+    axs[0].set_title("Accuracy")
+    
+    axs[1].plot(np.arange(0, EPOCHS), no_augmentation["loss"], label="No Augmentation Loss")
+    axs[1].plot(np.arange(0, EPOCHS), augmentation["val_loss"], label="Augmentation  Loss")
+    axs[1].set_title("Loss ")
+    
+    legend = fig.legend(loc='center right', labels = ["No Augmentation", "Augmentation"], bbox_to_anchor = (1.4, 0.5))
+    fig.tight_layout()
+    fig.savefig(PLOTS_PATH + f'aug_compare_plot.png', bbox_extra_artists=(legend, suptitle), bbox_inches='tight')
+    plt.show()
+
