@@ -1,6 +1,6 @@
 import warnings
 warnings.filterwarnings("ignore")
-
+from sklearn.metrics import roc_curve, auc
 import sys
 import numpy as np
 from itertools import chain
@@ -29,27 +29,51 @@ train_df["Finding Labels"] = train_df.apply(lambda x: x["Finding Labels"].split(
 test_df["Finding Labels"] = test_df.apply(lambda x: x["Finding Labels"].split("|"), axis=1)
 
 
-# ================================ experiment 1 ================================
+# ================================ Experiment 1 ================================
+print("================================ Experiment 1 ================================")
 results = []
 
-print("================================ NO AUGMENTATION ================================")
 img_data_gen = get_image_data_generator(augmentation=False)
 train_gen = get_image_iterator(train_df, img_data_gen)
 test_gen = get_image_iterator(test_df, img_data_gen)
-results.append(train('no_augmentation', train_gen, test_gen, all_labels, plot))
+results.append(train('no_augmentation', train_gen, test_gen, plot))
 
 if plot:
     show_image_examples(train_gen)
 
-print("================================ AUGMENTATION ================================")
 img_data_gen = get_image_data_generator(augmentation=True)
 train_gen = get_image_iterator(train_df, img_data_gen)
 test_gen = get_image_iterator(test_df, img_data_gen)
-results.append(train('augmentation', train_gen, test_gen, all_labels, plot))
+results.append(train('augmentation', train_gen, test_gen, plot))
 
 if plot:
     plot_augmentation(results)
 
+# ================================ Experiment 2 ================================
+print("================================ Experiment 2 ================================")
+activation_funcs = ['relu', 'sigmoid', 'tanh']
+results = []
 
+for activation_func in activation_funcs:
+    img_data_gen = get_image_data_generator(augmentation=True)
+    train_gen = get_image_iterator(train_df, img_data_gen)
+    test_gen = get_image_iterator(test_df, img_data_gen)
+    results.append(train(activation_func, train_gen, test_gen, plot, activation_func=activation_func))
 
+if plot:
+    plot_activations_funcs(results)
 
+# ================================ Experiment 3 ================================
+print("================================ Experiment 3 ================================")
+
+kernels = [(3,3), (5,5), (7,7), (12, 12)]
+results = []
+
+for kernel in kernels:
+    img_data_gen = get_image_data_generator(augmentation=True)
+    train_gen = get_image_iterator(train_df, img_data_gen)
+    test_gen = get_image_iterator(test_df, img_data_gen)
+    results.append(train(f'kernel_size_{kernel[0]}x{kernel[1]}', train_gen, test_gen, plot, kernel=kernel))
+
+if plot:
+    plot_kernels(results)

@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
-import numpy as np
-from sklearn.metrics import roc_curve, auc
 from consts import EPOCHS, PLOTS_PATH
+import numpy as np
 
 def show_image_examples(df_iterator):
     all_labels = list(df_iterator.class_indices.keys())
@@ -28,18 +27,6 @@ def plot_class_count(df, labels):
     _ = ax1.set_xticklabels(label_counts.index, rotation = 90)
     
     plt.savefig(PLOTS_PATH + 'class_count.png')
-    plt.show()
-
-def plot_roc(all_labels, pred_Y, test_Y):
-    fig, c_ax = plt.subplots(1,1, figsize = (9, 9))
-    for (idx, c_label) in enumerate(all_labels):
-        fpr, tpr, thresholds = roc_curve(test_Y[:,idx].astype(int), pred_Y[:,idx])
-        c_ax.plot(fpr, tpr, label = '%s (AUC:%0.2f)'  % (c_label, auc(fpr, tpr)))
-    c_ax.legend()
-    c_ax.set_xlabel('False Positive Rate')
-    c_ax.set_ylabel('True Positive Rate')
-    
-    fig.savefig('roc.png')
     plt.show()
 
 def plot_metrics(title, model_history):
@@ -81,3 +68,42 @@ def plot_augmentation(results):
     fig.savefig(PLOTS_PATH + f'aug_compare_plot.png', bbox_extra_artists=(legend, suptitle), bbox_inches='tight')
     plt.show()
 
+def plot_activations_funcs(results):
+    fig, axs = plt.subplots(2)
+    suptitle = fig.suptitle('Usage of different Activation Functions', fontsize=16)
+
+    axs[0].plot(np.arange(0, EPOCHS), results[0]["accuracy"], label="Relu Accuracy")
+    axs[0].plot(np.arange(0, EPOCHS), results[1]["accuracy"], label="Sigmoid  Accuracy")
+    axs[0].plot(np.arange(0, EPOCHS), results[2]["accuracy"], label="Tanh  Accuracy")
+    axs[0].set_title("Accuracy")
+    
+    axs[1].plot(np.arange(0, EPOCHS), results[0]["loss"], label="Relu Loss")
+    axs[1].plot(np.arange(0, EPOCHS), results[1]["loss"], label="Sigmoid Loss")
+    axs[1].plot(np.arange(0, EPOCHS), results[2]["loss"], label="Tanh Loss")
+    axs[1].set_title("Loss")
+    
+    legend = fig.legend(loc='center right', labels = ["Relu", "Sigmoid", "Tanh"], bbox_to_anchor = (1.1, 0.5))
+    fig.tight_layout()
+    fig.savefig(PLOTS_PATH + f'activatio_func_compare_plot.png', bbox_extra_artists=(legend, suptitle), bbox_inches='tight')
+    plt.show()
+
+def plot_kernels(results):
+    fig, axs = plt.subplots(2)
+    suptitle = fig.suptitle('Usage of different kernels', fontsize=16)
+
+    axs[0].plot(np.arange(0, EPOCHS), results[0]["accuracy"], label="3x3 Accuracy")
+    axs[0].plot(np.arange(0, EPOCHS), results[1]["accuracy"], label="5x5  Accuracy")
+    axs[0].plot(np.arange(0, EPOCHS), results[2]["accuracy"], label="7x7  Accuracy")
+    axs[0].plot(np.arange(0, EPOCHS), results[3]["accuracy"], label="12x12  Accuracy")
+    axs[0].set_title("Accuracy")
+    
+    axs[1].plot(np.arange(0, EPOCHS), results[0]["loss"], label="3x3 Loss")
+    axs[1].plot(np.arange(0, EPOCHS), results[1]["loss"], label="5x5 Loss")
+    axs[1].plot(np.arange(0, EPOCHS), results[2]["loss"], label="7x7 Loss")
+    axs[1].plot(np.arange(0, EPOCHS), results[3]["loss"], label="12x12 Loss")
+    axs[1].set_title("Loss")
+    
+    legend = fig.legend(loc='center right', labels = ["3x3", "5x5", "7x7", "12x12"], bbox_to_anchor = (1.1, 0.5))
+    fig.tight_layout()
+    fig.savefig(PLOTS_PATH + f'kernels.png', bbox_extra_artists=(legend, suptitle), bbox_inches='tight')
+    plt.show()
