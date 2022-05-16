@@ -1,0 +1,21 @@
+Porówanie dokładności sieci z użyciem augmentacji i bez.
+P-value z testu T-Studenta: 0.002755906146828168
+
+
+Porówanie dokładności sieci z różnymi funkcjami aktywacji
+Wyniki testu Friedmana oraz analizy post-hoc z użyciem testu Nemenyi:
+          0      1         2
+0  1.000000  0.001  0.010433
+1  0.001000  1.000  0.001000
+2  0.010433  0.001  1.000000
+
+
+Porówanie dokładności sieci z różnymi rozmiarami splotu
+Wyniki testu Friedmana oraz analizy post-hoc z użyciem testu Nemenyi:
+          0         1      2        3
+0  1.000000  0.021638  0.001  0.00100
+1  0.021638  1.000000  0.001  0.10147
+2  0.001000  0.001000  1.000  0.00100
+3  0.001000  0.101470  0.001  1.00000
+
+

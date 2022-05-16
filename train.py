@@ -54,7 +54,7 @@ def get_model(activation_func="relu", kernel=(3,3)):
     model.add(Flatten())
     model.add(Dense(64))
     model.add(Activation(activation_func))
-    model.add(Dropout(0.5))
+    model.add(Dropout(0.3))
     model.add(Dense(1))
     model.add(Activation(activation_func))
 
