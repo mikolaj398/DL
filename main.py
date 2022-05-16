@@ -30,39 +30,39 @@ if plot:
     plot_class_count('Test data', test_df, all_labels)
 
 # ================================ Experiment 1 ================================
-print("================================ Experiment 1 ================================")
-results = []
+# print("================================ Experiment 1 ================================")
+# results = []
 
-img_data_gen = get_image_data_generator(augmentation=False)
-train_gen = get_image_iterator(train_df, img_data_gen)
-test_gen = get_image_iterator(test_df, img_data_gen)
-results.append(train('no_augmentation', train_gen, test_gen, plot))
+# img_data_gen = get_image_data_generator(augmentation=False)
+# train_gen = get_image_iterator(train_df, img_data_gen)
+# test_gen = get_image_iterator(test_df, img_data_gen)
+# results.append(train('no_augmentation', train_gen, test_gen, plot))
 
-if plot:
-    show_image_examples(train_gen)
+# if plot:
+#     show_image_examples(train_gen)
 
-img_data_gen = get_image_data_generator(augmentation=True)
-train_gen = get_image_iterator(train_df, img_data_gen)
-test_gen = get_image_iterator(test_df, img_data_gen)
-results.append(train('augmentation', train_gen, test_gen, plot))
+# img_data_gen = get_image_data_generator(augmentation=True)
+# train_gen = get_image_iterator(train_df, img_data_gen)
+# test_gen = get_image_iterator(test_df, img_data_gen)
+# results.append(train('augmentation', train_gen, test_gen, plot))
 
-if plot:
-    plot_augmentation(results)
+# if plot:
+#     plot_augmentation(results)
 
 # ================================ Experiment 2 ================================
-print("================================ Experiment 2 ================================")
-activation_funcs = ['relu', 'sigmoid', 'tanh']
-results = []
+# print("================================ Experiment 2 ================================")
+# activation_funcs = ['relu', 'sigmoid', 'tanh']
+# results = []
 
-img_data_gen = get_image_data_generator(augmentation=True)
-train_gen = get_image_iterator(train_df, img_data_gen)
-test_gen = get_image_iterator(test_df, img_data_gen)
+# img_data_gen = get_image_data_generator(augmentation=True)
+# train_gen = get_image_iterator(train_df, img_data_gen)
+# test_gen = get_image_iterator(test_df, img_data_gen)
 
-for activation_func in activation_funcs:
-    results.append(train(activation_func, train_gen, test_gen, plot, activation_func=activation_func))
+# for activation_func in activation_funcs:
+#     results.append(train(activation_func, train_gen, test_gen, plot, activation_func=activation_func))
 
-if plot:
-    plot_activations_funcs(results)
+# if plot:
+#     plot_activations_funcs(results)
 
 # ================================ Experiment 3 ================================
 print("================================ Experiment 3 ================================")
