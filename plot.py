@@ -1,6 +1,11 @@
+from calendar import EPOCH
 import matplotlib.pyplot as plt
 from consts import EPOCHS, PLOTS_PATH
 import numpy as np
+
+def add_last_value(ax, data, key):
+    ax.annotate('%0.2f' % data[key][EPOCHS-1], xy=(1, data[key][EPOCHS-1]), xytext=(8, 0), 
+                 xycoords=('axes fraction', 'data'), textcoords='offset points')
 
 def show_image_examples(df_iterator):
     all_labels = list(df_iterator.class_indices.keys())
@@ -15,37 +20,42 @@ def show_image_examples(df_iterator):
 
     plt.savefig(PLOTS_PATH + 'images_example.png')
     plt.show()
+    plt.clf()
 
-def plot_class_count(df, labels):
+def plot_class_count(title, df, labels):
     label_counts = df['Finding Labels'].value_counts()[1:len(labels)]
     
     fig, ax1 = plt.subplots(1,1)
+    fig.suptitle(title, fontsize=16)
     bars = ax1.bar(np.arange(len(label_counts))+0.5, label_counts)
     ax1.bar_label(bars)
 
     ax1.set_xticks(np.arange(len(label_counts))+0.5)
     _ = ax1.set_xticklabels(label_counts.index, rotation = 90)
     
-    plt.savefig(PLOTS_PATH + 'class_count.png')
+    plt.tight_layout()
+    plt.savefig(PLOTS_PATH + f'{title.lower().replace(" ", "_")}_count.png')
     plt.show()
+    plt.clf()
 
 def plot_metrics(title, model_history):
 
     fig, axs = plt.subplots(2)
     suptitle = fig.suptitle(title.replace('_', ' ').title(), fontsize=16)
 
-    axs[0].plot(np.arange(0, EPOCHS), model_history["accuracy"], label="Training Accuracy")
-    axs[0].plot(np.arange(0, EPOCHS), model_history["val_accuracy"], label="Validation  Accuracy")
+    axs[0].plot(np.arange(0, EPOCHS), model_history["accuracy"], label="Accuracy")
     axs[0].set_title("Accuracy")
-    
-    axs[1].plot(np.arange(0, EPOCHS), model_history["loss"], label="Training Loss")
-    axs[1].plot(np.arange(0, EPOCHS), model_history["val_loss"], label="Validation  Loss")
-    axs[1].set_title("Loss ")
+    add_last_value(axs[0], model_history, "accuracy")
 
-    legend = fig.legend(loc='center right', labels = ["Training", "Validation"], bbox_to_anchor = (1.2, 0.5))
+    axs[1].plot(np.arange(0, EPOCHS), model_history["loss"], label="Loss")
+    axs[1].set_title("Loss ")
+    add_last_value(axs[1], model_history, "loss")
+
+    legend = fig.legend(loc='center right', bbox_to_anchor = (1.15, 0.5))
     fig.tight_layout()
     fig.savefig(PLOTS_PATH + f'{title}_plots.png', bbox_extra_artists=(legend, suptitle), bbox_inches='tight')
     plt.show()
+    plt.cla()
     
 
 def plot_augmentation(results):
@@ -55,55 +65,62 @@ def plot_augmentation(results):
     fig, axs = plt.subplots(2)
     suptitle = fig.suptitle('Usage of Augmentation results', fontsize=16)
 
-    axs[0].plot(np.arange(0, EPOCHS), no_augmentation["accuracy"], label="No Augmentation Accuracy")
-    axs[0].plot(np.arange(0, EPOCHS), augmentation["accuracy"], label="Augmentation  Accuracy")
-    axs[0].set_title("Accuracy")
+    axs[0].plot(np.arange(0, EPOCHS), no_augmentation["accuracy"], label=f"No Augmentation Accuracy ({no_augmentation['accuracy'][EPOCHS -1]:.2f})")
+    axs[0].plot(np.arange(0, EPOCHS), augmentation["accuracy"], label=f"Augmentation  Accuracy ({augmentation['accuracy'][EPOCHS -1]:.2f})")
+    axs[0].set_title(f"Accuracy")
+    legend1 = axs[0].legend(loc='upper right', bbox_to_anchor = (1.6, 0.5))
     
-    axs[1].plot(np.arange(0, EPOCHS), no_augmentation["loss"], label="No Augmentation Loss")
-    axs[1].plot(np.arange(0, EPOCHS), augmentation["val_loss"], label="Augmentation  Loss")
-    axs[1].set_title("Loss ")
-    
-    legend = fig.legend(loc='center right', labels = ["No Augmentation", "Augmentation"], bbox_to_anchor = (1.4, 0.5))
-    fig.tight_layout()
-    fig.savefig(PLOTS_PATH + f'aug_compare_plot.png', bbox_extra_artists=(legend, suptitle), bbox_inches='tight')
+    axs[1].plot(np.arange(0, EPOCHS), no_augmentation["loss"], label=f"No Augmentation  Loss ({no_augmentation['loss'][EPOCHS -1]:.2f})")
+    axs[1].plot(np.arange(0, EPOCHS), augmentation["val_loss"], label=f"Augmentation  Loss ({augmentation['loss'][EPOCHS -1]:.2f})")
+    axs[1].set_title(f"Loss")
+    legend2 = axs[1].legend(loc='upper right', bbox_to_anchor = (1.6, 0.5))
+
+    # fig.tight_layout()
+    fig.savefig(PLOTS_PATH + f'aug_compare_plot.png', bbox_extra_artists=(legend1, legend2, suptitle), bbox_inches='tight')
     plt.show()
+    plt.cla()
 
 def plot_activations_funcs(results):
     fig, axs = plt.subplots(2)
     suptitle = fig.suptitle('Usage of different Activation Functions', fontsize=16)
 
-    axs[0].plot(np.arange(0, EPOCHS), results[0]["accuracy"], label="Relu Accuracy")
-    axs[0].plot(np.arange(0, EPOCHS), results[1]["accuracy"], label="Sigmoid  Accuracy")
-    axs[0].plot(np.arange(0, EPOCHS), results[2]["accuracy"], label="Tanh  Accuracy")
+    axs[0].plot(np.arange(0, EPOCHS), results[0]["accuracy"], label=f'Relu Accuracy {results[0]["accuracy"][EPOCHS-1]:.2f}')
+    axs[0].plot(np.arange(0, EPOCHS), results[1]["accuracy"], label=f'Sigmoid  Accuracy {results[1]["accuracy"][EPOCHS-1]:.2f}')
+    axs[0].plot(np.arange(0, EPOCHS), results[2]["accuracy"], label=f'Tanh  Accuracy {results[2]["accuracy"][EPOCHS-1]:.2f}')
     axs[0].set_title("Accuracy")
+    legend1 = axs[0].legend(loc='center right', bbox_to_anchor = (1.5, 0.5))
     
-    axs[1].plot(np.arange(0, EPOCHS), results[0]["loss"], label="Relu Loss")
-    axs[1].plot(np.arange(0, EPOCHS), results[1]["loss"], label="Sigmoid Loss")
-    axs[1].plot(np.arange(0, EPOCHS), results[2]["loss"], label="Tanh Loss")
+    axs[1].plot(np.arange(0, EPOCHS), results[0]["loss"], label=f'Relu Loss ({results[0]["loss"][EPOCHS-1]:.2f})')
+    axs[1].plot(np.arange(0, EPOCHS), results[1]["loss"], label=f'Sigmoid Loss ({results[1]["loss"][EPOCHS-1]:.2f})')
+    axs[1].plot(np.arange(0, EPOCHS), results[2]["loss"], label=f'Tanh Loss ({results[2]["loss"][EPOCHS-1]:.2f})')
     axs[1].set_title("Loss")
+    legend2 = axs[1].legend(loc='center right', bbox_to_anchor = (1.45, 0.5))
     
-    legend = fig.legend(loc='center right', labels = ["Relu", "Sigmoid", "Tanh"], bbox_to_anchor = (1.1, 0.5))
-    fig.tight_layout()
-    fig.savefig(PLOTS_PATH + f'activatio_func_compare_plot.png', bbox_extra_artists=(legend, suptitle), bbox_inches='tight')
+    # fig.tight_layout()
+    fig.savefig(PLOTS_PATH + f'activation_func_compare_plot.png', bbox_extra_artists=(legend1, legend2, suptitle), bbox_inches='tight')
     plt.show()
+    plt.cla()
+
 
 def plot_kernels(results):
     fig, axs = plt.subplots(2)
     suptitle = fig.suptitle('Usage of different kernels', fontsize=16)
 
-    axs[0].plot(np.arange(0, EPOCHS), results[0]["accuracy"], label="3x3 Accuracy")
-    axs[0].plot(np.arange(0, EPOCHS), results[1]["accuracy"], label="5x5  Accuracy")
-    axs[0].plot(np.arange(0, EPOCHS), results[2]["accuracy"], label="7x7  Accuracy")
-    axs[0].plot(np.arange(0, EPOCHS), results[3]["accuracy"], label="12x12  Accuracy")
+    axs[0].plot(np.arange(0, EPOCHS), results[0]["accuracy"], label=f"3x3 Accuracy ({results[0]['accuracy'][EPOCHS-1]:.2f})")
+    axs[0].plot(np.arange(0, EPOCHS), results[1]["accuracy"], label=f"5x5  Accuracy ({results[1]['accuracy'][EPOCHS-1]:.2f})")
+    axs[0].plot(np.arange(0, EPOCHS), results[2]["accuracy"], label=f"7x7  Accuracy ({results[2]['accuracy'][EPOCHS-1]:.2f})")
+    axs[0].plot(np.arange(0, EPOCHS), results[3]["accuracy"], label=f"12x12  Accuracy ({results[3]['accuracy'][EPOCHS-1]:.2f})")
     axs[0].set_title("Accuracy")
+    legend1 = axs[0].legend(loc='center right', bbox_to_anchor = (1.5, 0.5))
     
-    axs[1].plot(np.arange(0, EPOCHS), results[0]["loss"], label="3x3 Loss")
-    axs[1].plot(np.arange(0, EPOCHS), results[1]["loss"], label="5x5 Loss")
-    axs[1].plot(np.arange(0, EPOCHS), results[2]["loss"], label="7x7 Loss")
-    axs[1].plot(np.arange(0, EPOCHS), results[3]["loss"], label="12x12 Loss")
+    axs[1].plot(np.arange(0, EPOCHS), results[0]["loss"], label=f"3x3 Loss ({results[0]['loss'][EPOCHS-1]:.2f})")
+    axs[1].plot(np.arange(0, EPOCHS), results[1]["loss"], label=f"5x5 Loss ({results[1]['loss'][EPOCHS-1]:.2f})")
+    axs[1].plot(np.arange(0, EPOCHS), results[2]["loss"], label=f"7x7 Loss ({results[2]['loss'][EPOCHS-1]:.2f})")
+    axs[1].plot(np.arange(0, EPOCHS), results[3]["loss"], label=f"12x12 Loss ({results[3]['loss'][EPOCHS-1]:.2f})")
     axs[1].set_title("Loss")
+    legend2 = axs[1].legend(loc='center right', bbox_to_anchor = (1.4, 0.5))
     
-    legend = fig.legend(loc='center right', labels = ["3x3", "5x5", "7x7", "12x12"], bbox_to_anchor = (1.1, 0.5))
-    fig.tight_layout()
-    fig.savefig(PLOTS_PATH + f'kernels.png', bbox_extra_artists=(legend, suptitle), bbox_inches='tight')
+    # fig.tight_layout()
+    fig.savefig(PLOTS_PATH + f'kernels.png', bbox_extra_artists=(legend1, legend2, suptitle), bbox_inches='tight')
     plt.show()
+    plt.cla()

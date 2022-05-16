@@ -1,3 +1,4 @@
+from random import random
 import warnings
 warnings.filterwarnings("ignore")
 from sklearn.metrics import roc_curve, auc
@@ -17,17 +18,16 @@ if len(sys.argv) != 1:
     plot = bool(sys.argv[1])
 
 data = get_combined_datasets()
-
-all_labels = np.unique(data["Finding Labels"].map(lambda x: x.split("|")).tolist())
-all_labels = [x for x in set(chain(*all_labels)) if len(x) > 0]
+all_labels = np.unique(data["Finding Labels"])
 
 if plot:
-    plot_class_count(data, all_labels)
+    plot_class_count('All data', data, all_labels)
 
-train_df, test_df = train_test_split(data, test_size=0.25, random_state=2018)
-train_df["Finding Labels"] = train_df.apply(lambda x: x["Finding Labels"].split("|"), axis=1)
-test_df["Finding Labels"] = test_df.apply(lambda x: x["Finding Labels"].split("|"), axis=1)
+train_df, test_df = train_test_split(data, test_size=0.25, stratify=data["Finding Labels"], random_state=42)
 
+if plot:
+    plot_class_count('Train data', train_df, all_labels)
+    plot_class_count('Test data', test_df, all_labels)
 
 # ================================ Experiment 1 ================================
 print("================================ Experiment 1 ================================")

@@ -79,5 +79,7 @@ def train(title, train_gen, test_gen, plot, activation_func='relu', kernel = (3,
     
     if plot:
         plot_metrics(title, model_history)
+    
+    return model_history
 
 

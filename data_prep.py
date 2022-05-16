@@ -22,8 +22,9 @@ def get_combined_datasets():
     main_df = main_df[list(columns_mapping.values())]
 
     covid_df = get_covid_cases(covid_df)
-
-    return pd.concat([main_df, covid_df])
+    data = pd.concat([main_df, covid_df])
+    data["Finding Labels"] = data.apply(lambda x: x["Finding Labels"].split("|")[0], axis=1)
+    return data
 
 def get_covid_cases(covid_df):
     covid_cases_df = covid_df[covid_df['Finding Labels'].str.contains('COVID-19')]
