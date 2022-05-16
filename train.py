@@ -6,6 +6,7 @@ from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
+from tensorflow.keras.optimizers import SGD
 
 
 def get_image_iterator(data, image_data_generator):
@@ -57,7 +58,8 @@ def get_model(activation_func="relu", kernel=(3,3)):
     model.add(Dense(1))
     model.add(Activation(activation_func))
 
-    model.compile(loss="binary_crossentropy", optimizer="rmsprop", metrics=["accuracy"])
+    opt = SGD(lr=1e-6)
+    model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
 
     return model
 

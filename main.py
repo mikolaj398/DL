@@ -54,10 +54,11 @@ print("================================ Experiment 2 ===========================
 activation_funcs = ['relu', 'sigmoid', 'tanh']
 results = []
 
+img_data_gen = get_image_data_generator(augmentation=True)
+train_gen = get_image_iterator(train_df, img_data_gen)
+test_gen = get_image_iterator(test_df, img_data_gen)
+
 for activation_func in activation_funcs:
-    img_data_gen = get_image_data_generator(augmentation=True)
-    train_gen = get_image_iterator(train_df, img_data_gen)
-    test_gen = get_image_iterator(test_df, img_data_gen)
     results.append(train(activation_func, train_gen, test_gen, plot, activation_func=activation_func))
 
 if plot:
@@ -65,14 +66,14 @@ if plot:
 
 # ================================ Experiment 3 ================================
 print("================================ Experiment 3 ================================")
-
 kernels = [(3,3), (5,5), (7,7), (12, 12)]
 results = []
 
+img_data_gen = get_image_data_generator(augmentation=True)
+train_gen = get_image_iterator(train_df, img_data_gen)
+test_gen = get_image_iterator(test_df, img_data_gen)
+
 for kernel in kernels:
-    img_data_gen = get_image_data_generator(augmentation=True)
-    train_gen = get_image_iterator(train_df, img_data_gen)
-    test_gen = get_image_iterator(test_df, img_data_gen)
     results.append(train(f'kernel_size_{kernel[0]}x{kernel[1]}', train_gen, test_gen, plot, kernel=kernel))
 
 if plot:
