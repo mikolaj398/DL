@@ -8,6 +8,14 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
 from tensorflow.keras.optimizers import SGD
 
+def get_train_test(train_index, test_index, data, X):
+    trainData = X[train_index]
+    testData = X[test_index]
+
+    train_df = data.loc[data["Image Index"].isin(list(trainData))]
+    test_df = data.loc[data["Image Index"].isin(list(testData))]
+
+    return train_df, test_df
 
 def get_image_iterator(data, image_data_generator):
     return image_data_generator.flow_from_dataframe(
@@ -64,7 +72,7 @@ def get_model(activation_func="relu", kernel=(3,3)):
     return model
 
 
-def train(title, train_gen, test_gen, plot, activation_func='relu', kernel = (3,3)):
+def train(train_gen, test_gen, activation_func='relu', kernel = (3,3)):
     model = get_model(activation_func, kernel)
 
     history = model.fit_generator(
@@ -73,15 +81,36 @@ def train(title, train_gen, test_gen, plot, activation_func='relu', kernel = (3,
         validation_data=test_gen,
         epochs=EPOCHS,
     )
-    model_history = pd.DataFrame(history.history)
-    model_history["epoch"] = history.epoch
+    scores = model.evaluate_generator(test_gen)
+    return history.history, scores[1]
 
-    with open(RESULTS_PATH + f'{title}_results.json', mode='w+') as f:
-        model_history.to_json(f)
-    
-    if plot:
-        plot_metrics(title, model_history)
-    
-    return model_history
+def cv(name, data, X, kf, res_dict, tested_params, augmentation = True):
+    fold_count = 0
+    for train_index, test_index in kf.split(X):
+        print(f"================================ Fold {fold_count} ================================")
+        fold_count += 1
+        train_df, test_df = get_train_test(train_index, test_index, data, X)
 
+        img_data_gen = get_image_data_generator(augmentation=augmentation)
+        train_gen = get_image_iterator(train_df, img_data_gen)
+        test_gen = get_image_iterator(test_df, img_data_gen)
 
+        if 'augmentation' in name:
+            history, acc = train(train_gen, test_gen)
+            res = {
+                'fold': fold_count,
+                'history': history,
+                'accuracy': acc,
+            }
+            res_dict[name].append(res)
+
+        else:   
+            for test_param in tested_params:
+                params = {name: test_param} if 'augmentation' not in name else {}
+                history, acc = train(train_gen, test_gen, **params)
+                res = {
+                    'fold': fold_count,
+                    'history': history,
+                    'accuracy': acc,
+                }
+                res_dict[str(test_param)].append(res)
