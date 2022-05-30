@@ -4,9 +4,9 @@ from consts import *
 
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D
+from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
 from keras.layers import Activation, Dropout, Flatten, Dense
-from tensorflow.keras.optimizers import SGD
+from tensorflow.keras.optimizers import SGD, Adam
 
 def get_train_test(train_index, test_index, data, X):
     trainData = X[train_index]
@@ -44,30 +44,36 @@ def get_image_data_generator(augmentation=True):
     return img_generator
 
 
-def get_model(activation_func="relu", kernel=(3,3)):
+def get_model(activation_func="relu", kernel=(5,5)):
     model = Sequential()
 
     model.add(Conv2D(32, kernel, input_shape=(*IMG_SIZE, 1)))
+    model.add(BatchNormalization())
     model.add(Activation(activation_func))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-
-    model.add(Conv2D(32, kernel))
-    model.add(Activation(activation_func))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.15))
 
     model.add(Conv2D(64, kernel))
+    model.add(BatchNormalization())
     model.add(Activation(activation_func))
     model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.15))
+
+    model.add(Conv2D(128, kernel))
+    model.add(BatchNormalization())
+    model.add(Activation(activation_func))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.15))
 
     model.add(Flatten())
     model.add(Dense(64))
     model.add(Activation(activation_func))
+    model.add(BatchNormalization())
     model.add(Dropout(0.3))
     model.add(Dense(1))
     model.add(Activation(activation_func))
 
-    opt = SGD(lr=1e-6)
-    model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
+    model.compile(loss="binary_crossentropy", optimizer='nadam', metrics=["accuracy"])
 
     return model
 

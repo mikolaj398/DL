@@ -18,7 +18,7 @@ X = np.array(data["Image Index"])
 
 print("================================ Experiment 1 ================================")
 results = {
-    'no_augmentation': []
+    'no_augmentation': [],
 }
 cv('no_augmentation', data, X, kf, results, [], augmentation = False)
 with open(RESULTS_PATH + 'no_aug.json', 'w+') as res_file:
@@ -30,6 +30,7 @@ results = {
 cv('augmentation', data, X, kf, results, [], augmentation = True)
 with open(RESULTS_PATH + 'aug.json', 'w+') as res_file:
     json.dump(results, res_file)
+
 
 print("================================ Experiment 2 ================================")
 activation_funcs = ['relu', 'sigmoid', 'tanh']

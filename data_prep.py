@@ -24,6 +24,8 @@ def get_combined_datasets():
     covid_df = get_covid_cases(covid_df)
     data = pd.concat([main_df, covid_df])
     data["Finding Labels"] = data.apply(lambda x: x["Finding Labels"].split("|")[0], axis=1)
+    data = data.sample(frac=1).reset_index(drop=True)
+    data = data.sample(frac=1).reset_index(drop=True)
     return data
 
 def get_covid_cases(covid_df):

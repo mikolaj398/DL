@@ -5,11 +5,11 @@ MAIN_DATASET_ANNOTATIONS_PATH = 'main_labels.csv'
 COVID_DATASET_ANNOTATIONS_PATH = 'covid_labels.csv'
 
 PLOTS_PATH = './plots_cv/'
-RESULTS_PATH = './results_cv/'
+RESULTS_PATH = './results_cv2/'
 
-EPOCHS = 25
+EPOCHS = 50
 BATCH_SIZE = 24
-STEPS_PER_EPOCH = 25
+STEPS_PER_EPOCH = 15
 FOLDS = 5
 
 IMG_SIZE = (128, 128)
