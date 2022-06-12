@@ -16,6 +16,7 @@ def cmp_avgs(files, keys, title):
             
             avg = np.average(results_matrix, axis=0)
             plt.plot(np.arange(0, EPOCHS), avg, label=f'{key} folds avg')
+    plt.xlabel("Epochs")
     plt.title(title.title())
     plt.legend()
     plt.savefig(PLOTS_PATH + title.replace(' ', '_')+'.png')
@@ -41,6 +42,7 @@ def plot_folds(file_name, data_key):
             avg = np.average(results_matrix, axis=0)
             axs[1].plot(np.arange(0, EPOCHS), avg, label=f'All folds avg')
             axs[1].legend()
+            axs[1].set_xlabel("Epochs")
             fig.savefig(PLOTS_PATH + f"{data_key}_{metric}.png")
             plt.cla()
             plt.clf()
