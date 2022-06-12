@@ -1,5 +1,4 @@
 import pandas as pd
-from plot import plot_metrics
 from consts import *
 
 from keras.preprocessing.image import ImageDataGenerator

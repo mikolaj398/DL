@@ -17,31 +17,31 @@ kf = KFold(n_splits=FOLDS, random_state=42, shuffle=True)
 X = np.array(data["Image Index"])
 
 print("================================ Experiment 1 ================================")
-results = {
-    'no_augmentation': [],
-}
-cv('no_augmentation', data, X, kf, results, [], augmentation = False)
-with open(RESULTS_PATH + 'no_aug.json', 'w+') as res_file:
-    json.dump(results, res_file)
+# results = {
+#     'no_augmentation': [],
+# }
+# cv('no_augmentation', data, X, kf, results, [], augmentation = False)
+# with open(RESULTS_PATH + 'no_aug.json', 'w+') as res_file:
+#     json.dump(results, res_file)
 
-results = {
-    'augmentation': []
-}
-cv('augmentation', data, X, kf, results, [], augmentation = True)
-with open(RESULTS_PATH + 'aug.json', 'w+') as res_file:
-    json.dump(results, res_file)
+# results = {
+#     'augmentation': []
+# }
+# cv('augmentation', data, X, kf, results, [], augmentation = True)
+# with open(RESULTS_PATH + 'aug.json', 'w+') as res_file:
+#     json.dump(results, res_file)
 
 
 print("================================ Experiment 2 ================================")
-activation_funcs = ['relu', 'sigmoid', 'tanh']
-results = {
-    'relu': [],
-    'sigmoid': [],
-    'tanh': [],
-}
-cv('activation_func', data, X, kf, results, activation_funcs, augmentation = True)
-with open(RESULTS_PATH + 'activation_func.json', 'w+') as res_file:
-    json.dump(results, res_file)
+# activation_funcs = ['relu', 'sigmoid', 'tanh']
+# results = {
+#     'relu': [],
+#     'sigmoid': [],
+#     'tanh': [],
+# }
+# cv('activation_func', data, X, kf, results, activation_funcs, augmentation = True)
+# with open(RESULTS_PATH + 'activation_func.json', 'w+') as res_file:
+#     json.dump(results, res_file)
 
 print("================================ Experiment 3 ================================")
 kernels = [(3,3), (5,5), (7,7), (12, 12)]
